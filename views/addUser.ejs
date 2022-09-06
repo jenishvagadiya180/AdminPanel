@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/header.ejs') %>
+</head>
+
+<body class="hold-transition sidebar-mini">
+  <!-- navbar -->
+  <%- include('./partials/navbar.ejs') %>
+
+    <!-- sidebar -->
+    <%- include('./partials/sidebar.ejs') %>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Add User</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">Blank Page</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+
+        <form id="addUserForm" novalidate="novalidate">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="">Firstname</label>
+                  <input type="text" name="firstName" class="form-control" id="firstName"
+                    placeholder="Enter Firstname" />
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <label for="">Lastname</label>
+                  <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Enter Lastname" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="">Mobile</label>
+                  <input type="text" name="mobileNumber" class="form-control" id="mobileNumber"
+                    placeholder="Enter Mobile No." />
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Email</label>
+                  <input type="email" name="email" class="form-control" id="email" placeholder="Enter email" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Password</label>
+                  <input type="password" name="password" class="form-control" id="password"
+                    placeholder="Enter Password" />
+                </div>
+              </div>
+              <div class="col"></div>
+            </div>
+          </div>
+
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-2 float-right  mt-n5">
+        <a href="/admin/user/userData/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+            Back
+          </button></a>
+      </div>
+
+      <!-- footer     -->
+      <%- include('./partials/footer.ejs') %>
+        <!-- /footer -->
+
+        <!-- script -->
+        <%- include('./partials/script.ejs') %>
+          <!-- /script -->
+
+          <script>
+            $(document).ready(function () {
+              $("#addUserForm").validate({
+                rules: {
+                  firstName: {
+                    required: true,
+                  },
+                  lastName: {
+                    required: true,
+                  },
+                  mobileNumber: {
+                    required: true,
+                  },
+                  email: {
+                    required: true,
+                    email: true,
+                  },
+                  password: {
+                    required: true,
+                    minlength: 8,
+                  },
+                },
+                messages: {
+                  firstName: {
+                    required: "Please enter  firstName",
+                  },
+                  lastName: {
+                    required: "Please enter  lastName",
+                  },
+                  mobileNumber: {
+                    required: "Please enter  mobile number",
+                  },
+                  email: {
+                    required: "Please enter a email address",
+                    email: "Please enter a valid email address",
+                  },
+                  password: {
+                    required: "Please provide a password",
+                    minlength: "Your password must be at least 8 characters long",
+                  },
+                },
+                errorElement: "span",
+                errorPlacement: function (error, element) {
+                  error.addClass("invalid-feedback");
+                  element.closest(".form-group").append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                  $(element).addClass("is-invalid");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                  $(element).removeClass("is-invalid");
+                },
+              });
+
+              $("#addUserForm").submit(function (event) {
+                let validation = $(this).valid();
+                if (validation) {
+                  event.preventDefault();
+                  const personData = $(this).serialize();
+                  $.ajax({
+                    url: "/admin/user/add",
+                    method: "post",
+                    dataType: "json",
+                    data: personData,
+                    headers: {
+                      authorization: "bearer" + " " + localStorage.getItem("token"),
+                    },
+                    success: function (result) {
+                      if (result.status == 200) {
+                        toastr.success(result.message);
+                        window.location.href = "/admin/user/userData/view";
+                      } else {
+                        $("#firstName").val("");
+                        $("#lastName").val("");
+                        $("#mobileNumber").val("");
+                        $("#email").val("");
+                        $("#password").val("");
+                        toastr.error(result.message);
+                      }
+                    },
+                    error: function (err) {
+                      console.log("something went wrong", err);
+                    },
+                  });
+                }
+              });
+            });
+          </script>
+          <%- include('./partials/script.ejs') %>
+</body>
+
+</html>

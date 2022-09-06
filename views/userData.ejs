@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/header.ejs') %>
+</head>
+
+<body class="hold-transition sidebar-mini">
+  <!-- navbar -->
+  <%- include('./partials/navbar.ejs') %>
+    <!-- sidebar -->
+    <%- include('./partials/sidebar.ejs') %>
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>User Table</h1>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+        <!-- add user button -->
+        <div class="w-25 float-right mb-4">
+          <a href="/admin/user/addUser/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+              Add User
+            </button></a>
+        </div>
+        <!-- Main content -->
+        <div class="myTable">
+          <table id="userTable" class="display">
+            <thead>
+              <tr>
+                <th>firstName</th>
+                <th>lastName</th>
+                <th>mobileNumber</th>
+                <th>email</th>
+                <th>deleteAndUpdate</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <!-- /.content -->
+      </div>
+      <!-- /.content-wrapper -->
+      <div class="col-md-2 float-right  mt-n2">
+        <a href="/admin/user/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+            Back
+          </button></a>
+      </div>
+      <!-- footer     -->
+      <%- include('./partials/footer.ejs') %>
+        <!-- /footer -->
+        <!-- script -->
+        <%- include('./partials/script.ejs') %>
+          <!-- /script -->
+          <script>
+            $(document).ready(function () {
+              jQuery("#userTable").DataTable({
+                responsive: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                searching: true,
+                lengthChange: true,
+                paging: true,
+                ajax: {
+                  type: "GET",
+                  url: "/admin/user/list",
+                  headers: {
+                    authorization: "bearer " + localStorage.getItem("token"),
+                  },
+                  data: function (dataTable) {
+                    dataTable.perPage = dataTable.length;
+                    if (dataTable.search) {
+                      dataTable.search = dataTable.search.value;
+                    }
+                    if (dataTable.order.length > 0) {
+                      dataTable.sortType = dataTable.order[0].dir;
+                      dataTable.sortField =
+                        dataTable.columns[dataTable.order[0].column].data;
+                    }
+                    dataTable.pageNumber = dataTable.start / dataTable.length + 1;
+                    return dataTable;
+                  },
+                  search: {
+                    return: true,
+                  },
+                },
+                columns: [
+                  {
+                    title: "Firstname",
+                    data: "firstName",
+                    "sWidth": "20%",
+                  },
+                  {
+                    title: "Lastname",
+                    data: "lastName",
+                    "sWidth": "20%",
+                  },
+                  {
+                    title: "Mobile",
+                    data: "mobileNumber",
+                    "sWidth": "15%",
+                  },
+                  {
+                    title: "Email",
+                    data: "email",
+                    "sWidth": "30%",
+                  },
+                  {
+                    title: "Action",
+                    data: "_id",
+                    "mRender": function (data, type, full) {
+                      return '<button id="updateData" type="button" class="btn btn-primary btn-sm list-action-btns" onclick="updateUserData(\'' + data + '\')" ><i class="fas fa-pen"></i></button>' + "  " + '<button id="list_btn_delete" type="button" class="btn btn-danger btn-sm list-action-btns" onclick="deleteUser(\'' + data + '\')" ><i class="fas fa-trash"></i></button>'
+                    },
+                    "sWidth": "15%",
+                  },
+                ],
+                order: [[0, "asc"]],
+                error: function (err) {
+                  console.log("something went wrong", err);
+                },
+              });
+            });
+          </script>
+
+          <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+
+          <script>
+            function deleteUser(userId) {
+              $(document).ready(function () {
+                let url = `/admin/user/delete/${userId}`;
+                $.ajax({
+                  url: url,
+                  method: "delete",
+                  dataType: "json",
+                  headers: {
+                    authorization: "bearer" + " " + localStorage.getItem("token"),
+                  },
+                  success: function (result) {
+                    if (result.status == 200) {
+                      $('#userTable').DataTable().ajax.reload();
+                      toastr.success(result.message);
+                    } else {
+                      toastr.error(result.message);
+                    }
+                  },
+                  error: function (err) {
+                    console.log("something went wrong in deletion", err);
+                  },
+                });
+              });
+            }
+
+            function updateUserData(userId) {
+              window.location.href = `/admin/user/updateUser/view/${userId}`;
+            }
+          </script>
+</body>
+
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/header.ejs') %>
+    <style>
+      .hide {
+        display: none;
+      }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini">
+  <!-- navbar -->
+  <%- include('./partials/navbar.ejs') %>
+
+    <!-- sidebar -->
+    <%- include('./partials/sidebar.ejs') %>
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Category Table</h1>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+
+        <!-- add user buttton -->
+        <div class="col-md-3 float-right mb-4">
+          <a href="/admin/category/addCategory/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+              Add Category
+            </button></a>
+        </div>
+
+        <!-- Main content -->
+        <div class="myTable">
+          <table id="categoryTable" class="display">
+            <thead>
+              <tr>
+                <th class="w-25">name</th>
+                <th class="w-25">deleteAndUpdate</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <!-- /.content -->
+        <div class="col-md-2 float-right m-4">
+          <a href="/admin/user/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+              Back
+            </button></a>
+        </div>
+      </div>
+
+
+      <!-- /.content-wrapper -->
+
+      <!-- footer     -->
+      <%- include('./partials/footer.ejs') %>
+        <!-- /footer -->
+
+        <!-- script -->
+        <%- include('./partials/script.ejs') %>
+          <!-- /script -->
+
+          <script>
+            $(document).ready(function () {
+              jQuery("#categoryTable").DataTable({
+                responsive: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                searching: true,
+                lengthChange: true,
+                paging: true,
+                ajax: {
+                  type: "GET",
+                  url: "/admin/category/list",
+                  headers: {
+                    authorization: "bearer " + localStorage.getItem("token"),
+                  },
+                  data: function (dataTable) {
+                    console.log("dataTable", dataTable);
+                    dataTable.perPage = dataTable.length;
+                    if (dataTable.search) {
+                      dataTable.search = dataTable.search.value;
+                    }
+                    if (dataTable.order.length > 0) {
+                      dataTable.sortType = dataTable.order[0].dir;
+                      dataTable.sortField =
+                        dataTable.columns[dataTable.order[0].column].data;
+                    }
+                    dataTable.pageNumber = dataTable.start / dataTable.length + 1;
+                    return dataTable;
+                  },
+                  search: {
+                    return: true,
+                  },
+                },
+                columns: [
+                  {
+                    title: "Name",
+                    data: "name",
+                    "sWidth": "50%",
+                  },
+                  {
+                    title: "Action",
+                    data: "_id",
+                    "mRender": function (data, type, full) {
+                      return '<button id="updateData" type="button" class="btn btn-primary btn-sm list-action-btns  " onclick="updateCategory(\'' + data + '\')" ><i class="fas fa-pen"></i></button>' + "  " + '<button id="list_btn_delete" type="button" class="btn btn-danger btn-sm list-action-btns \'' + data + '\'" onclick="deleteCategory(\'' + data + '\')" ><i class="fas fa-trash"></i></button>';
+                    },
+                    "sWidth": "50%",
+                  },
+                ],
+                order: [[0, "asc"]],
+                error: function (err) {
+                  console.log("something went wrong", err);
+                },
+              });
+            });
+          </script>
+
+          <script>
+            function deleteCategory(categoryId) {
+              $(document).ready(function () {
+                let url = `/admin/category/delete/${categoryId}`;
+                $.ajax({
+                  url: url,
+                  method: "delete",
+                  dataType: "json",
+                  headers: {
+                    authorization: "bearer" + " " + localStorage.getItem("token"),
+                  },
+                  success: function (result) {
+                    if (result.status == 200) {
+                      toastr.success(result.message);
+                      $('#categoryTable').DataTable().ajax.reload();
+                    } else {
+                      toastr.error(result.message);
+                    }
+                  },
+                  error: function (err) {
+                    console.log("something went wrong in deletion", err);
+                  },
+                });
+              });
+            }
+
+            function updateCategory(categoryId) {
+              window.location.href = `/admin/category/updateCategory/view/${categoryId}`;
+            }
+          </script>
+</body>
+
+</html>

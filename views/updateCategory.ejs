@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/header.ejs') %>
+</head>
+
+<body class="hold-transition sidebar-mini">
+  <!-- navbar -->
+  <%- include('./partials/navbar.ejs') %>
+
+    <!-- sidebar -->
+    <%- include('./partials/sidebar.ejs') %>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Update Category</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">Blank Page</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+
+        <form id="updateCategoryForm" novalidate="novalidate">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label for="text">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%- categoryData.name %>" />
+              </div>
+            </div>
+          </div>
+
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-2 float-right  mt-n2">
+        <a href="/admin/category/categoryData/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+            Back
+          </button></a>
+      </div>
+
+      <!-- footer     -->
+      <%- include('./partials/footer.ejs') %>
+        <!-- /footer -->
+
+        <!-- script -->
+        <%- include('./partials/script.ejs') %>
+          <!-- /script -->
+
+          <script>
+            $(document).ready(function () {
+              $("#updateCategoryForm").validate({
+                rules: {
+                  name: {
+                    required: true,
+                  },
+                },
+                messages: {
+                  name: {
+                    required: "Please enter Category name",
+                  },
+                },
+                errorElement: "span",
+                errorPlacement: function (error, element) {
+                  error.addClass("invalid-feedback");
+                  element.closest(".form-group").append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                  $(element).addClass("is-invalid");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                  $(element).removeClass("is-invalid");
+                },
+              });
+
+              $("#updateCategoryForm").submit(function (event) {
+                let validation = $(this).valid();
+                if (validation) {
+                  event.preventDefault();
+                  const data = $(this).serialize();
+                  $.ajax({
+                    url: "/admin/category/update/<%= categoryData._id %>",
+                    method: "put",
+                    dataType: "json",
+                    data: data,
+                    headers: {
+                      authorization: "bearer" + " " + localStorage.getItem("token"),
+                    },
+                    success: function (result) {
+                      if (result.status == 200) {
+                        toastr.success(result.message);
+                        window.location.href = "/admin/category/categoryData/view";
+                      } else {
+                        $("#name").val("");
+                        toastr.error(result.message);
+                      }
+                    },
+                    error: function (err) {
+                      console.log("something went wrong", err);
+                    },
+                  });
+                }
+              });
+            });
+          </script>
+</body>
+
+</html>

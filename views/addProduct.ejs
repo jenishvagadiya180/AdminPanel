@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/header.ejs') %>
+</head>
+
+<body class="hold-transition sidebar-mini">
+  <!-- navbar -->
+  <%- include('./partials/navbar.ejs') %>
+
+    <!-- sidebar -->
+    <%- include('./partials/sidebar.ejs') %>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Add Product</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">Blank Page</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+
+        <form id="addProductForm" enctype="multipart/form-data">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="">Product Name</label>
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Enter Product Name" />
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <label for="">Description</label>
+                  <input type="text" name="description" class="form-control" id="description"
+                    placeholder="Enter Product Description" />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Category Name</label>
+                  <select class="form-control" name="categoryId">
+                    <% categoryData.forEach(function(category) { %>
+                      <option value="<%=category.id %>">
+                        <%= category.name %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Upload Image </label><br />
+                  <input type="file" id="image" name="image" multiple />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-2 float-right  mt-n5">
+        <a href="/admin/product/productData/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+            Back
+          </button></a>
+      </div>
+      <!-- footer     -->
+      <%- include('./partials/footer.ejs') %>
+        <!-- /footer -->
+
+        <!-- script -->
+        <%- include('./partials/script.ejs') %>
+          <!-- /script -->
+
+          <script>
+            $(document).ready(function () {
+              $("#addProductForm").validate({
+                rules: {
+                  name: {
+                    required: true,
+                  },
+                  description: {
+                    required: true,
+                  },
+                  categoryId: {
+                    required: true,
+                  },
+                  image: {
+                    required: true,
+                  },
+                },
+                messages: {
+                  name: {
+                    required: "Please enter Product Name",
+                  },
+                  description: {
+                    required: "Please enter Product Description",
+                  },
+                  image: {
+                    required: "Please upload image at least one",
+                  },
+                },
+                errorElement: "span",
+                errorPlacement: function (error, element) {
+                  error.addClass("invalid-feedback");
+                  element.closest(".form-group").append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                  $(element).addClass("is-invalid");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                  $(element).removeClass("is-invalid");
+                },
+              });
+
+              $("#addProductForm").submit(function (event) {
+                let validation = $(this).valid();
+                if (validation) {
+                  event.preventDefault();
+                  var productData = new FormData(this);
+                  $.ajax({
+                    url: "/admin/product/add",
+                    method: "post",
+                    dataType: "json",
+                    data: productData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                      authorization: "bearer" + " " + localStorage.getItem("token"),
+                    },
+                    success: function (result) {
+                      if (result.status == 200) {
+                        toastr.success(result.message);
+                        window.location.href = "/admin/product/productData/view";
+                      } else {
+                        $("#name").val("");
+                        $("#description").val("");
+                        toastr.error(result.message);
+                      }
+                    },
+                    error: function (err) {
+                      console.log("something went wrong", err);
+                    },
+                  });
+                }
+              });
+            });
+          </script>
+          <%- include('./partials/script.ejs') %>
+</body>
+
+</html>

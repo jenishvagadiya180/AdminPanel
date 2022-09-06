@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/header.ejs') %>
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <!-- navbar -->
+  <%- include('./partials/navbar.ejs') %>
+
+    <!-- sidebar -->
+    <%- include('./partials/sidebar.ejs') %>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Product Table</h1>
+              </div>
+            </div>
+          </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- add user buttton -->
+        <div class="w-25 float-right mb-4">
+          <a href="/admin/product/addProduct/view"><button type="button" class="btn btn-block btn-primary btn-flat">Add
+              Product</button></a>
+        </div>
+
+        <!-- Main content -->
+        <div class="myTable">
+          <table id="productTable" class="display">
+            <thead>
+              <tr>
+                <th>name</th>
+                <th>description</th>
+                <th>categoryName</th>
+                <th>productImage</th>
+                <th>deleteAndUpdate</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <!-- /.content -->
+      </div>
+      <!-- /.content-wrapper -->
+      <!-- Control Sidebar -->
+      <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+      </aside>
+      <!-- /.control-sidebar -->
+      </div>
+      <!-- ./wrapper -->
+
+      <div class="col-md-2 float-right  mt-n2">
+        <a href="/admin/user/view"><button type="button" class="btn btn-block btn-primary btn-flat">
+            Back
+          </button></a>
+      </div>
+      <!-- footer     -->
+      <%- include('./partials/footer.ejs') %>
+        <!-- /footer -->
+
+        <!-- script -->
+        <%- include('./partials/script.ejs') %>
+          <!-- /script -->
+
+          <script>
+            $(document).ready(function () {
+              jQuery('#productTable').DataTable({
+                responsive: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                searching: true,
+                lengthChange: true,
+                paging: true,
+                ajax: {
+                  type: "GET",
+                  url: '/admin/product/list',
+                  headers: {
+                    authorization: 'bearer ' + localStorage.getItem('token')
+                  },
+                  data: function (dataTable) {
+                    console.log("dataTable", dataTable)
+                    dataTable.perPage = dataTable.length
+                    if (dataTable.search) {
+                      dataTable.search = dataTable.search.value
+                    }
+                    if (dataTable.order.length > 0) {
+                      dataTable.sortType = dataTable.order[0].dir
+                      dataTable.sortField = dataTable.columns[dataTable.order[0].column].data
+                    }
+                    dataTable.pageNumber = (dataTable.start / dataTable.length) + 1
+                    return dataTable;
+                  },
+                  search: {
+                    return: true,
+                  },
+                },
+                "columns": [
+                  {
+                    "title": "Product Name",
+                    "data": "name",
+                    "sWidth": "17%",
+                  },
+                  {
+                    "title": "Description",
+                    "data": "description",
+                    "sWidth": "41%",
+                  },
+                  {
+                    "title": "categoryName",
+                    "data": "category",
+                    "sWidth": "17%",
+                  },
+                  {
+                    "title": "productImage",
+                    "data": "images",
+                    "render": function (data) {
+                      return `<img src='${data[0]}' +  class="avatar" width="100" />`;
+                    },
+                    "sWidth": "15%",
+                  },
+                  {
+                    "title": "Action",
+                    "data": "_id",
+                    "sWidth": "10%",
+                    "mRender": function (data, type, full) {
+                      return '<button id="updateData" type="button" class="btn btn-primary btn-sm list-action-btns  " onclick="updateProduct(\'' + data + '\')" ><i class="fas fa-pen"></i></button>' + "  " + '<button id="list_btn_delete" type="button" class="btn btn-danger btn-sm list-action-btns " onclick="deleteProduct(\'' + data + '\')" ><i class="fas fa-trash"></i></button>';
+                    }
+
+                  },
+                ],
+                'order': [[0, 'asc']],
+                error: function (err) {
+                  console.log("something went wrong", err);
+                },
+              });
+            });
+          </script>
+
+          <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+          <script>
+            function deleteProduct(productId) {
+              $(document).ready(function () {
+                let url = `/admin/product/delete/${productId}`
+                $.ajax({
+                  url: url,
+                  method: 'delete',
+                  dataType: "json",
+                  headers: {
+                    authorization: 'bearer' + " " + localStorage.getItem('token')
+                  },
+                  success: function (result) {
+                    if (result.status == 200) {
+                      toastr.success(result.message);
+                      $('#productTable').DataTable().ajax.reload();
+                    } else {
+                      toastr.error(result.message);
+                    }
+                  },
+                  error: function (err) {
+                    console.log('something went wrong in deletion', err)
+                  }
+                });
+              })
+            }
+            function updateProduct(productId) {
+              window.location.href = `/admin/product/updateProduct/view/${productId}`
+            }
+          </script>
+</body>
+
+</html>

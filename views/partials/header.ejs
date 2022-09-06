@@ -1,0 +1,37 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AdminLTE 3 | Blank Page</title>
+
+<script>
+  let token = localStorage.getItem("token");
+  if (token == null) {
+    window.location.href = "/admin/user/signIn/view";
+  }
+</script>
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="<%= process.env.URL %>/plugins/fontawesome-free/css/all.min.css" />
+<!-- Theme style -->
+<link rel="stylesheet" href="<%= process.env.URL %>/dist/css/adminlte.min.css" />
+<!-- icheck bootstrap -->
+<link rel="stylesheet" href="<%= process.env.URL %>/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+<!-- datatable css -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css" />
+<!-- jQuery -->
+<script src="<%= process.env.URL %>/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery datatable cdn -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+<!-- toastr -->
+<link rel="stylesheet" href="<%= process.env.URL %>/plugins/toastr/toastr.min.css" />
+
+<style>
+  .myTable {
+    margin: 20px;
+  }
+
+  .styles {
+    height: auto;
+  }
+</style>
