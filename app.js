@@ -12,6 +12,7 @@ import errorhandler from './error/handler.js'
 
 dotenv.config();
 const app = express();
+
 const port = process.env.PORT;
 
 //Database Connection
