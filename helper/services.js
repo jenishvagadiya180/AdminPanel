@@ -3,8 +3,10 @@ import statusCode from "./httpStatusCode.js"
 import { validationResult } from "express-validator";
 import moment from "moment";
 import fs from 'fs';
-
-
+import nodeMailer from 'nodemailer'
+import ejs from "ejs"
+import message from "./message.js";
+import Twilio from "twilio";
 
 class services {
     static response = (code, message, data) => {
@@ -90,6 +92,52 @@ class services {
         };
         return responseData;
     }
+
+    static sendEmail = async (res, token, email) => {
+        var transporter = nodeMailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'jenishraghu180@gmail.com',
+                pass: 'hfrzugkbxbwqopso'
+            }
+        });
+
+        ejs.renderFile(process.cwd() + "/views/sendEmail.ejs", { token: token }, function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            var mailOptions = {
+                from: 'jenishraghu180@gmail.com',
+                to: email,
+                subject: 'Reset new Password',
+                html: data
+            };
+
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                }
+                console.log('Email sent: ');
+            });
+
+        })
+        this.setResponse(res, statusCode.SUCCESSFUL, message.EMAIL_SENT_SUCCESSFULLY, null)
+    }
+
+    static sendSms(token) {
+        const twilio = new Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+        twilio.messages.create({
+            body: `${process.env.URL}/admin/user/recoverPassword/view/${token}`,
+            from: process.env.TWILIO_PURCHASED_NUMBER,
+            to: '+919157078984'
+        }).then(message => {
+            console.log('message :>> ', message);
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
+
 
 };
 

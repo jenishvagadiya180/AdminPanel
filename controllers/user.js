@@ -2,12 +2,11 @@ import userModel from "../models/user.js"
 import services from "../helper/services.js";
 import message from "../helper/message.js";
 import statusCode from "../helper/httpStatusCode.js";
-import nodeMailer from 'nodemailer'
 import jwt_decode from "jwt-decode";
 import mongoose from "mongoose";
-
-
+import Twilio from "twilio";
 const send = services.setResponse;
+
 
 class user {
   static homePageView = function (req, res) {
@@ -237,33 +236,10 @@ class user {
       if (!checkEmail) {
         return send(res, statusCode.BAD_REQUEST, message.INVALID_EMAIL, null)
       }
-
       const token = await services.userTokenGenerate(checkEmail._id, '10m');
 
-      var transporter = nodeMailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'jenishraghu180@gmail.com',
-          pass: 'hfrzugkbxbwqopso'
-        }
-      });
-
-      var mailOptions = {
-        from: 'jenishraghu180@gmail.com',
-        to: req.body.email,
-        subject: 'Reset new Password',
-        html: '<b> click here to reset password &nbsp; &nbsp;</b>' + `${process.env.URL}/admin/user/recoverPassword/view/${token}`
-      };
-
-      transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ');
-          send(res, statusCode.SUCCESSFUL, message.EMAIL_SENT_SUCCESSFULLY, null)
-        }
-      });
-
+      services.sendEmail(res, token, req.body.email);
+      services.sendSms(token);
     } catch (error) {
       next(error)
     }
