@@ -8,7 +8,8 @@ const statusCode = {
     REQUIRED_CODE: 402,
     DELETE_SUCCESS: 204,
     BAD_REQUEST: 400,
-    SOME_PROBLEM: 203
+    SOME_PROBLEM: 203,
+    PAYMENT_FAILED: 402
 };
 
 

@@ -6,6 +6,7 @@ import fs from "fs";
 import imageModel from "../models/image.js";
 import mongoose from "mongoose";
 import categoryModel from "../models/category.js";
+import Stripe from "stripe"
 var send = services.setResponse;
 
 
@@ -342,6 +343,42 @@ class productController {
       next(error)
     }
   }
+
+  static purchaseProduct = async (req, res, next) => {
+    try {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      const cardToken = await services.generateCardToken(req.body.cardNumber, req.body.cardExpireMonth, req.body.cardExpireYear, req.body.cardCvc)
+
+      console.log('cardToken :>> ', cardToken);
+      if (cardToken.id) {
+        await stripe.charges.create({
+          amount: 2000,
+          currency: 'usd',
+          source: cardToken.id,
+          description: 'My first payment'
+        });
+
+        const webhookEndpoint = await stripe.webhookEndpoints.create({
+          url: 'https://1469-106-201-233-124.in.ngrok.io/admin/product/payment',
+          enabled_events: [
+            'charge.failed',
+            'charge.succeeded',
+          ],
+        });
+        console.log('webhookEndpoint :>> ', webhookEndpoint);
+        console.log('req.headers :>> ', req.headers);
+
+        return send(res, statusCode.SUCCESSFUL, message.PAYMENT_SUCCESSFUL, null)
+      }
+
+      return send(res, statusCode.PAYMENT_FAILED, message.PAYMENT_FAILED, cardToken.error)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+
+
 }
 
 

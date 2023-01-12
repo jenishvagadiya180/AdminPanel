@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
-import connectDB from './database/connectdb.js';
+import connectDatabase from './database/connectDatabase.js';
 import admin from './routes/user.js';
 import category from './routes/category.js'
 import product from './routes/product.js'
@@ -15,7 +15,7 @@ const app = express();
 const port = process.env.PORT;
 
 //Database Connection
-connectDB();
+connectDatabase();
 
 //swagger
 const options = {

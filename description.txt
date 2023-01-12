@@ -1,0 +1,37 @@
+
+====> admin panel
+
+1.user api
+  ->add user  - use express validation, 
+  ->login - use express validation, jwtToken  
+  ->list - use aggregation
+  ->update - use condition like "id is available or not" and after save it 
+  ->delete  -use condition like "id is available or not" and after using softDelete  
+  ->forgotPassword - use express validation, jwt token generate, sendEmail using nodeMailer, send sms using Twilio 
+  ->recoverPassword - use express validation, use jwt_decode
+
+2. category api
+   ->add  - use express validation
+   ->list  - use aggregation, add pagination and searching and sorting
+   ->list by id - use express validation
+   ->update - use condition like "id is available or not" and after save it
+   ->delete  - use condition like "id is available or not" and after using softDelete  
+
+2. product api
+   ->add - use express validation, image uploading
+   ->list - use aggregation, add pagination and searching and sorting
+   ->list by id - use express validation
+   ->update -  use condition like "id is available or not" and after save it
+   ->delete  -  use condition like "id is available or not" and after using softDelete 
+   ->image delete - delete image using fs module
+   ->payment - use stripe for payment gateway
+
+===> admin panel Frontend 
+        -ejs template
+        -ajax,
+        -html,
+        -css,
+        -bootstrap,
+        -jQuery,
+        -dataTable,
+        -serverSide searching and pagination

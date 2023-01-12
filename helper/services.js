@@ -7,6 +7,7 @@ import nodeMailer from 'nodemailer'
 import ejs from "ejs"
 import message from "./message.js";
 import Twilio from "twilio";
+import Stripe from "stripe"
 
 class services {
     static response = (code, message, data) => {
@@ -138,8 +139,35 @@ class services {
         });
     }
 
+    static generateCardToken = async (number, cardExpireMonth, cardExpireYear, cardCvc) => {
+        let stripeToken = {};
+        try {
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+            const token = await stripe.tokens.create({
+                card: {
+                    number: number,
+                    exp_month: cardExpireMonth,
+                    exp_year: cardExpireYear,
+                    cvc: cardCvc,
+                },
+            });
+            stripeToken.id = token.id;
+
+        } catch (error) {
+            switch (error.type) {
+                case 'StripeCardError':
+                    stripeToken.error = error.message
+                    break;
+                default: s
+                    stripeToken.error = error.message
+                    break;
+            }
+        }
+        return stripeToken
+
+    }
+
 
 };
-
 
 export default services;

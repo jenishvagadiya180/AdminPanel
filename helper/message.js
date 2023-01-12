@@ -46,7 +46,11 @@ const message = {
    EMAIL_SENT_SUCCESSFULLY: "Email Sent Successfully",
    PASSWORD_NOT_MATCHED: "Password not matched",
    INVALID_NEW_PASSWORD: "Invalid New Password",
-   INVALID_CONFIRM_PASSWORD: "Invalid Confirm  Password"
+   INVALID_CONFIRM_PASSWORD: "Invalid Confirm  Password",
+   CARD_TOKEN_ERROR: "some error in cardToken",
+   PAYMENT_SUCCESSFUL: "payment successful",
+   PAYMENT_FAILED: "payment failed"
+
 }
 
 export default message;

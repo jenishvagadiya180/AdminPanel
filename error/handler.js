@@ -13,8 +13,8 @@ const errorhandler = (error, req, res, next) => {
             stack: error.stack
         }
     }
-    res.render('error500.ejs');
-    // send(res, statusCode.SERVER_ERROR, message.SOMETHING_WENT_WRONG, errorObj)
+    // res.render('error500.ejs');
+    send(res, statusCode.SERVER_ERROR, message.SOMETHING_WENT_WRONG, errorObj)
 }
 
 export default errorhandler

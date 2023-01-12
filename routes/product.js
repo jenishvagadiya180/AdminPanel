@@ -43,5 +43,7 @@ router.delete("/image/delete/:imageId", auth,
     param('imageId').isMongoId().withMessage(message.INVALID_IMAGE_ID),
     productController.deleteImage)
 
+router.post("/payment", productController.purchaseProduct)
+
 
 export default router;

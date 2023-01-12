@@ -335,7 +335,7 @@
 *         in: path
 *         required: true
 *         description: delete productImage by id
-*         schema: 
+*         schema:
 *           type: string
 *     responses:
 *       '200':
@@ -357,14 +357,68 @@
 *           application/json:
 *             schema:
 *               type: object
-*               properties:  
-*                 status: 
-*                   type: number   
+*               properties:
+*                 status:
+*                   type: number
 *                   example: 500
-*                 message: 
+*                 message:
 *                   type: string
-*                   example: server is not responding 
+*                   example: server is not responding
 */
 
 
+// make Payment
+/**
+* @swagger
+* /admin/product/payment:
+*   post:
+*     summary: add  email and card details
+*     tags: [product]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               cardNumber:
+*                 type: string
+*                 example: 4242424242424242
+*               cardExpireMonth:
+*                 type: string
+*                 example: 9
+*               cardExpireYear:
+*                 type: string
+*                 example: 2023
+*               cardCvc:
+*                 type: string
+*                 example: 314
+*     responses:
+*       '200':
+*         description: payment successful
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 status:
+*                   type: integer
+*                   example: 200
+*                 message:
+*                   type: string
+*                   example: payment successful
+*       '500':
+*         description: some error occurred
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 status:
+*                   type: number
+*                   example: 500
+*                 message:
+*                   type: string
+*                   example: server is not responding
+*/
 
