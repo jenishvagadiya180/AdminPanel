@@ -90,6 +90,7 @@ class productController {
         name: req.body.name,
         isDeleted: false,
       });
+      console.log('matchProductName :>> ', matchProductName);
 
       if (matchProductName) {
         return send(
