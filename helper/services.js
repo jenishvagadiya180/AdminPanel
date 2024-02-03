@@ -104,8 +104,8 @@ class services {
     var transporter = nodeMailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_ID, //"jenishraghu180@gmail.com",
-        pass: process.env.EMAIL_APP_PASSWORD, //"kjxc pjvs pxdw kzeh",
+        user: process.env.EMAIL_ID,
+        pass: process.env.EMAIL_APP_PASSWORD,
       },
     });
     console.log("transporter :>> ", transporter);
@@ -125,7 +125,7 @@ class services {
           );
         }
         const mailOptions = {
-          from: process.env.EMAIL_ID, //"jenishraghu180@gmail.com",
+          from: process.env.EMAIL_ID,
           to: email,
           subject: "Reset new Password",
           html: data,
@@ -166,7 +166,7 @@ class services {
       .create({
         body: `${process.env.URL}/admin/user/recoverPassword/view/${token}`,
         from: process.env.TWILIO_PURCHASED_NUMBER,
-        to: "+919157078984",
+        to: "+919167678984",
       })
       .then((message) => {
         console.log("message :>> ", message);
