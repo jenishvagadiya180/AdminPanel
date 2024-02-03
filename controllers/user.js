@@ -308,13 +308,15 @@ class user {
         email: req.body.email,
         isDeleted: false,
       });
+      console.log("checkEmail :>> ", checkEmail);
       if (!checkEmail) {
         return send(res, statusCode.BAD_REQUEST, message.INVALID_EMAIL, null);
       }
       const token = await services.userTokenGenerate(checkEmail._id, "10m");
+      console.log("token :>> ", token);
 
       services.sendEmail(res, token, req.body.email);
-      services.sendSms(token);
+      // services.sendSms(token);
     } catch (error) {
       next(error);
     }
